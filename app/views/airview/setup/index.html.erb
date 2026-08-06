@@ -1,0 +1,52 @@
+<div class="airview-shell">
+  <%= render "airview/shared/sidebar", resources: Airview.resources.values, active: :setup %>
+
+  <main class="airview-main">
+    <header class="airview-toolbar">
+      <div>
+        <h1>Resource setup</h1>
+        <p>Enable Rails models and configure the fields Airview exposes.</p>
+      </div>
+    </header>
+
+    <section class="airview-grid-wrap">
+      <table class="airview-grid airview-setup-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Table</th>
+            <th>Columns</th>
+            <th>Status</th>
+            <th class="airview-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @models.each do |model| %>
+            <% definition = @definitions_by_model[model.name] %>
+            <tr>
+              <td><strong><%= model.name %></strong></td>
+              <td><%= model.table_name %></td>
+              <td><%= model.columns.size %></td>
+              <td>
+                <% if definition&.enabled? %>
+                  Enabled
+                <% elsif definition %>
+                  Draft
+                <% else %>
+                  Not configured
+                <% end %>
+              </td>
+              <td class="airview-actions">
+                <% if definition %>
+                  <%= link_to "Edit", edit_setup_resource_path(definition) %>
+                <% else %>
+                  <%= link_to "Configure", new_setup_resource_path(model_name: model.name) %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>

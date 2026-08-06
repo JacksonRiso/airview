@@ -1,0 +1,14 @@
+<div class="airview-shell">
+  <%= render "airview/shared/sidebar", resources: Airview.resources.values, active: :setup %>
+
+  <main class="airview-main">
+    <header class="airview-toolbar">
+      <div>
+        <h1>Configure <%= @model.name %></h1>
+        <p>Review inferred fields before exposing this model in Airview.</p>
+      </div>
+    </header>
+
+    <%= render "form", definition: @definition, url: setup_resources_path, method: :post %>
+  </main>
+</div>

@@ -1,0 +1,16 @@
+<div class="airview-shell">
+  <%= render "airview/shared/sidebar", resources: Airview.resources.values, active: :setup %>
+
+  <main class="airview-main">
+    <header class="airview-toolbar">
+      <div>
+        <h1>Edit <%= @definition.label %></h1>
+        <p><%= @definition.model_name %></p>
+      </div>
+
+      <%= button_to "Remove resource", setup_resource_path(@definition), method: :delete, form: { data: { turbo_confirm: "Remove this Airview resource?" } } %>
+    </header>
+
+    <%= render "form", definition: @definition, url: setup_resource_path(@definition), method: :patch %>
+  </main>
+</div>

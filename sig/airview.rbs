@@ -1,0 +1,54 @@
+module Airview
+  VERSION: String
+
+  def self.configuration: () -> Configuration
+  def self.configure: () { (Configuration) -> void } -> void
+  def self.resources: () -> Hash[Symbol, Resource]
+  def self.resource!: (Symbol | String key) -> Resource
+
+  class Error < StandardError
+  end
+
+  class ConfigurationError < Error
+  end
+
+  class UnknownResourceError < Error
+  end
+
+  class Configuration
+  end
+
+  class Field
+    attr_reader name: Symbol
+    attr_reader label: String
+    attr_reader type: Symbol
+    attr_reader options: untyped
+    attr_reader model: untyped
+    attr_reader label_method: Symbol
+
+    def initialize: (Symbol | String name, type: Symbol | String, ?label: String?, ?readonly: bool, ?options: untyped, ?model: untyped, ?label_method: Symbol?) -> void
+    def readonly?: () -> bool
+    def editable?: () -> bool
+    def association?: () -> bool
+    def attribute_name: () -> Symbol
+    def validate!: () -> void
+    def model_class: () -> untyped
+    def option_values: () -> Array[untyped]
+  end
+
+  class Resource
+    attr_accessor label: String
+    attr_accessor label_method: Symbol
+    attr_reader key: Symbol
+    attr_reader model: String
+    attr_reader fields: Hash[Symbol, Field]
+
+    def initialize: (Symbol | String key, model: String) -> void
+    def field: (Symbol | String name, type: Symbol | String, ?label: String?, **untyped options) -> Field
+    def model_class: () -> untyped
+    def field!: (Symbol | String name) -> Field
+    def editable_fields: () -> Array[Field]
+    def validate!: () -> void
+    def record_label: (untyped record) -> String
+  end
+end

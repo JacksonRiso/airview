@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Airview</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "airview/application", media: "all" %>
+    <%= javascript_include_tag "airview/application", defer: true %>
+  </head>
+  <body class="airview">
+    <% if notice.present? %>
+      <div class="airview-flash airview-flash--notice"><%= notice %></div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="airview-flash airview-flash--alert"><%= alert %></div>
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>

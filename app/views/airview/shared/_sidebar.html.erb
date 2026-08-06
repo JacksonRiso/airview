@@ -1,0 +1,9 @@
+<aside class="airview-sidebar">
+  <div class="airview-brand">Airview</div>
+  <nav class="airview-resource-list">
+    <%= link_to "Setup", setup_path, class: ["airview-resource-link", ("is-active" if active == :setup)] %>
+    <% resources.each do |resource| %>
+      <%= link_to resource.label, resource_path(resource.key), class: ["airview-resource-link", ("is-active" if defined?(@resource) && @resource&.key == resource.key)] %>
+    <% end %>
+  </nav>
+</aside>

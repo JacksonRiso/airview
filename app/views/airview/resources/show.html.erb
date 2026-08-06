@@ -1,0 +1,113 @@
+<div class="airview-shell">
+  <%= render "airview/shared/sidebar", resources: @resources, active: :resource %>
+
+  <main class="airview-main">
+    <header class="airview-toolbar">
+      <div>
+        <h1><%= @resource.label %></h1>
+        <p><%= number_with_delimiter(@query.count) %> records</p>
+      </div>
+
+      <%= form_with url: resource_path(@resource.key), method: :get, class: "airview-search" do %>
+        <%= search_field_tag :q, params[:q], placeholder: "Search", autocomplete: "off" %>
+        <%= submit_tag "Search" %>
+      <% end %>
+    </header>
+
+    <section class="airview-views">
+      <%= link_to "Default view", resource_path(@resource.key), class: "airview-view-pill is-active" %>
+      <% @views.each do |view| %>
+        <%= link_to view.name, resource_path(@resource.key, filters: view.filters, sort: view.sorts&.dig("sort"), direction: view.sorts&.dig("direction")), class: "airview-view-pill" %>
+        <%= button_to "Delete", resource_view_path(@resource.key, view), method: :delete, class: "airview-link-button" %>
+      <% end %>
+
+      <%= form_with url: resource_views_path(@resource.key), method: :post, class: "airview-save-view" do %>
+        <%= hidden_field_tag :q, params[:q] %>
+        <%= hidden_field_tag :sort, params[:sort] %>
+        <%= hidden_field_tag :direction, params[:direction] %>
+        <% params.fetch(:filters, {}).each do |key, value| %>
+          <%= hidden_field_tag "filters[#{key}]", value %>
+        <% end %>
+        <%= text_field_tag :name, nil, placeholder: "New view name" %>
+        <%= submit_tag "Save view" %>
+      <% end %>
+    </section>
+
+    <section class="airview-filters">
+      <%= form_with url: resource_path(@resource.key), method: :get do %>
+        <%= hidden_field_tag :q, params[:q] %>
+        <div class="airview-filter-grid">
+          <% @resource.fields.each_value do |field| %>
+            <label>
+              <span><%= field.label %></span>
+              <%= text_field_tag "filters[#{field.name}]", params.dig(:filters, field.name), placeholder: "Filter" %>
+            </label>
+          <% end %>
+        </div>
+        <%= submit_tag "Apply filters" %>
+      <% end %>
+    </section>
+
+    <section class="airview-create">
+      <h2>New record</h2>
+      <%= form_with url: resource_records_path(@resource.key), method: :post do %>
+        <div class="airview-create-grid">
+          <% @resource.fields.each_value do |field| %>
+            <% next if field.readonly? %>
+            <label>
+              <span><%= field.label %></span>
+              <%= airview_input_for(@record, field) %>
+            </label>
+          <% end %>
+        </div>
+        <%= submit_tag "Create record" %>
+      <% end %>
+    </section>
+
+    <section class="airview-grid-wrap" data-airview-grid>
+      <table class="airview-grid">
+        <thead>
+          <tr>
+            <% @resource.fields.each_value do |field| %>
+              <th data-airview-column="<%= field.name %>">
+                <%= airview_sort_link(@resource, field) %>
+                <span class="airview-column-resizer" data-airview-resizer></span>
+              </th>
+            <% end %>
+            <th class="airview-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @records.each do |record| %>
+            <tr>
+              <% @resource.fields.each_value do |field| %>
+                <td tabindex="0">
+                  <% if field.editable? %>
+                    <%= form_with url: resource_record_path(@resource.key, record), method: :patch, class: "airview-cell-form" do %>
+                      <%= airview_input_for(record, field) %>
+                      <%= submit_tag "Save" %>
+                    <% end %>
+                  <% else %>
+                    <span class="airview-readonly"><%= airview_field_value(record, field) %></span>
+                  <% end %>
+                </td>
+              <% end %>
+              <td class="airview-actions">
+                <%= button_to "Delete", resource_record_path(@resource.key, record), method: :delete, form: { data: { turbo_confirm: "Delete this record?" } } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="airview-pagination">
+      <% if @query.page > 1 %>
+        <%= link_to "Previous", resource_path(@resource.key, request.query_parameters.merge(page: @query.page - 1)) %>
+      <% end %>
+      <% if @records.size == @query.limit %>
+        <%= link_to "Next", resource_path(@resource.key, request.query_parameters.merge(page: @query.page + 1)) %>
+      <% end %>
+    </footer>
+  </main>
+</div>

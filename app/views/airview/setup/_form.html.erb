@@ -1,0 +1,73 @@
+<% if definition.errors.any? %>
+  <section class="airview-flash airview-flash--alert">
+    <%= definition.errors.full_messages.to_sentence %>
+  </section>
+<% end %>
+
+<%= form_with model: definition, url: url, method: method, scope: :resource_definition, class: "airview-setup-form" do |form| %>
+  <section class="airview-create">
+    <div class="airview-create-grid">
+      <label>
+        <span>Key</span>
+        <%= form.text_field :key, readonly: definition.persisted? %>
+      </label>
+      <label>
+        <span>Model</span>
+        <%= form.text_field :model_name, readonly: definition.persisted? %>
+      </label>
+      <label>
+        <span>Label</span>
+        <%= form.text_field :label %>
+      </label>
+      <label>
+        <span>Label method</span>
+        <%= form.text_field :label_method %>
+      </label>
+      <label class="airview-checkbox-label">
+        <%= form.check_box :enabled %>
+        <span>Enabled in Airview</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="airview-grid-wrap">
+    <table class="airview-grid airview-setup-fields">
+      <thead>
+        <tr>
+          <th>Visible</th>
+          <th>Readonly</th>
+          <th>Name</th>
+          <th>Label</th>
+          <th>Type</th>
+          <th>Order</th>
+          <th>Target model</th>
+          <th>Target label</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= form.fields_for :field_definitions do |field_form| %>
+          <tr>
+            <td><%= field_form.check_box :visible %></td>
+            <td><%= field_form.check_box :readonly %></td>
+            <td>
+              <%= field_form.hidden_field :id if field_form.object.persisted? %>
+              <%= field_form.hidden_field :name %>
+              <%= field_form.hidden_field :association_name %>
+              <%= field_form.object.name %>
+            </td>
+            <td><%= field_form.text_field :label %></td>
+            <td><%= field_form.select :field_type, Airview::Field::TYPES.map { |type| [type.to_s.humanize, type] } %></td>
+            <td><%= field_form.number_field :position, min: 0 %></td>
+            <td><%= field_form.text_field :target_model_name %></td>
+            <td><%= field_form.text_field :target_label_method %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </section>
+
+  <footer class="airview-pagination">
+    <%= form.submit "Save resource" %>
+    <%= link_to "Cancel", setup_path %>
+  </footer>
+<% end %>

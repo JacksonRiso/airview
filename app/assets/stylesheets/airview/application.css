@@ -1,0 +1,320 @@
+:root {
+  --airview-bg: #f6f7f9;
+  --airview-panel: #ffffff;
+  --airview-border: #d9dee7;
+  --airview-text: #172033;
+  --airview-muted: #667085;
+  --airview-accent: #0f766e;
+  --airview-accent-strong: #115e59;
+  --airview-danger: #b42318;
+}
+
+.airview {
+  margin: 0;
+  background: var(--airview-bg);
+  color: var(--airview-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+}
+
+.airview a {
+  color: inherit;
+}
+
+.airview-shell {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.airview-sidebar {
+  border-right: 1px solid var(--airview-border);
+  background: #111827;
+  color: #f9fafb;
+  padding: 16px;
+}
+
+.airview-brand {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.airview-resource-list {
+  display: grid;
+  gap: 4px;
+}
+
+.airview-resource-link {
+  border-radius: 6px;
+  color: #d1d5db;
+  padding: 9px 10px;
+  text-decoration: none;
+}
+
+.airview-resource-link.is-active,
+.airview-resource-link:hover {
+  background: #243043;
+  color: #ffffff;
+}
+
+.airview-main {
+  min-width: 0;
+  padding: 18px;
+}
+
+.airview-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.airview-toolbar h1 {
+  font-size: 24px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.airview-toolbar p {
+  color: var(--airview-muted);
+  margin: 4px 0 0;
+}
+
+.airview-search,
+.airview-save-view,
+.airview-cell-form {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.airview-views,
+.airview-filters,
+.airview-create {
+  background: var(--airview-panel);
+  border: 1px solid var(--airview-border);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  padding: 12px;
+}
+
+.airview-views {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.airview-view-pill {
+  border: 1px solid var(--airview-border);
+  border-radius: 999px;
+  color: var(--airview-muted);
+  padding: 5px 10px;
+  text-decoration: none;
+}
+
+.airview-view-pill.is-active {
+  background: #e6fffb;
+  border-color: #99f6e4;
+  color: var(--airview-accent-strong);
+}
+
+.airview-filter-grid,
+.airview-create-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  margin-bottom: 10px;
+}
+
+.airview-create h2 {
+  font-size: 15px;
+  margin: 0 0 10px;
+}
+
+.airview-setup-form {
+  display: grid;
+  gap: 12px;
+}
+
+.airview-setup-table .airview-actions,
+.airview-setup-fields .airview-actions {
+  white-space: nowrap;
+}
+
+.airview-checkbox-label {
+  align-items: center;
+  display: flex !important;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.airview-checkbox-label input {
+  min-height: auto;
+  width: auto;
+}
+
+.airview label {
+  color: var(--airview-muted);
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.airview input,
+.airview select,
+.airview textarea,
+.airview button,
+.airview input[type="submit"] {
+  border: 1px solid var(--airview-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+  font: inherit;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+
+.airview input[type="submit"],
+.airview button {
+  background: var(--airview-accent);
+  border-color: var(--airview-accent);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.airview-grid-wrap {
+  background: var(--airview-panel);
+  border: 1px solid var(--airview-border);
+  border-radius: 8px;
+  overflow: auto;
+}
+
+.airview-grid {
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 900px;
+  width: 100%;
+}
+
+.airview-grid th,
+.airview-grid td {
+  border-bottom: 1px solid var(--airview-border);
+  border-right: 1px solid var(--airview-border);
+  min-width: 180px;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.airview-grid th {
+  background: #eef2f7;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.airview-grid th[data-airview-column] {
+  position: sticky;
+}
+
+.airview-column-resizer {
+  bottom: 0;
+  cursor: col-resize;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 7px;
+}
+
+.airview-column-resizer:hover {
+  background: #99f6e4;
+}
+
+.airview-grid td:focus-within,
+.airview-grid td:focus {
+  outline: 2px solid var(--airview-accent);
+  outline-offset: -2px;
+}
+
+.airview-grid input,
+.airview-grid select,
+.airview-grid textarea {
+  min-width: 120px;
+  width: 100%;
+}
+
+.airview-cell-form input[type="submit"] {
+  min-width: 54px;
+}
+
+.airview-actions {
+  min-width: 96px;
+  width: 96px;
+}
+
+.airview-readonly {
+  color: var(--airview-muted);
+  display: block;
+  min-height: 34px;
+  overflow-wrap: anywhere;
+  padding: 7px 0;
+}
+
+.airview-link-button {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--airview-danger) !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+.airview-pagination {
+  display: flex;
+  gap: 10px;
+  padding: 14px 0;
+}
+
+.airview-pagination a {
+  background: var(--airview-panel);
+  border: 1px solid var(--airview-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-decoration: none;
+}
+
+.airview-flash {
+  border-bottom: 1px solid var(--airview-border);
+  padding: 10px 18px;
+}
+
+.airview-flash--notice {
+  background: #ecfdf3;
+  color: #067647;
+}
+
+.airview-flash--alert {
+  background: #fef3f2;
+  color: var(--airview-danger);
+}
+
+.airview-empty {
+  margin: 48px auto;
+  max-width: 520px;
+}
+
+@media (max-width: 760px) {
+  .airview-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .airview-sidebar {
+    border-right: 0;
+  }
+
+  .airview-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

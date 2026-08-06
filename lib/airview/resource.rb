@@ -1,0 +1,50 @@
+# frozen_string_literal: true
+
+module Airview
+  class Resource
+    attr_accessor :label, :label_method
+    attr_reader :key, :model, :fields
+
+    def initialize(key, model:)
+      @key = key.to_sym
+      @model = model
+      @label = key.to_s.humanize
+      @label_method = :to_s
+      @fields = {}
+    end
+
+    def field(name, type:, label: nil, **options)
+      definition = Field.new(name, type:, label:, **options)
+      definition.validate!
+      fields[definition.name] = definition
+      definition
+    end
+
+    def model_class
+      model.to_s.constantize
+    end
+
+    def field!(name)
+      fields.fetch(name.to_sym) do
+        raise ConfigurationError, "Unknown Airview field #{name.inspect} for #{key}"
+      end
+    end
+
+    def editable_fields
+      fields.values.select(&:editable?)
+    end
+
+    def validate!
+      raise ConfigurationError, "Airview resource #{key} must define at least one field" if fields.empty?
+
+      fields.each_value(&:validate!)
+    end
+
+    def record_label(record)
+      return "" unless record
+      return record.public_send(label_method).to_s if record.respond_to?(label_method)
+
+      record.to_s
+    end
+  end
+end
