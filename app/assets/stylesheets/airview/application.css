@@ -1,12 +1,14 @@
 :root {
-  --airview-bg: #f6f7f9;
+  --airview-bg: #f7f8fb;
   --airview-panel: #ffffff;
-  --airview-border: #d9dee7;
-  --airview-text: #172033;
-  --airview-muted: #667085;
-  --airview-accent: #0f766e;
-  --airview-accent-strong: #115e59;
+  --airview-border: #d6dbe4;
+  --airview-soft-border: #e7eaf0;
+  --airview-text: #1f2937;
+  --airview-muted: #5b6475;
+  --airview-accent: #1668db;
+  --airview-accent-strong: #0958c8;
   --airview-danger: #b42318;
+  --airview-tint: #fff3eb;
 }
 
 .airview {
@@ -23,15 +25,15 @@
 
 .airview-shell {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-columns: 280px minmax(0, 1fr);
   min-height: 100vh;
 }
 
 .airview-sidebar {
   border-right: 1px solid var(--airview-border);
-  background: #111827;
-  color: #f9fafb;
-  padding: 16px;
+  background: #ffffff;
+  color: var(--airview-text);
+  padding: 12px 10px;
 }
 
 .airview-brand {
@@ -46,38 +48,163 @@
 }
 
 .airview-resource-link {
-  border-radius: 6px;
-  color: #d1d5db;
-  padding: 9px 10px;
+  border-radius: 4px;
+  color: var(--airview-text);
+  padding: 8px 10px;
   text-decoration: none;
 }
 
 .airview-resource-link.is-active,
 .airview-resource-link:hover {
-  background: #243043;
-  color: #ffffff;
+  background: #f2f4f7;
+  color: var(--airview-text);
+}
+
+.airview-view-list {
+  display: grid;
+  gap: 2px;
+  margin: 2px 0 10px 12px;
+}
+
+.airview-view-row {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.airview-view-link {
+  border-radius: 4px;
+  color: var(--airview-muted);
+  font-size: 13px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 7px 10px;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.airview-view-link.is-active,
+.airview-view-link:hover {
+  background: #eef4ff;
+  color: #174ea6;
+}
+
+.airview-view-folder {
+  color: var(--airview-muted);
+  font-size: 11px;
+  font-weight: 700;
+  margin: 9px 8px 3px;
+  text-transform: uppercase;
+}
+
+.airview-view-menu,
+.airview-new-view {
+  position: relative;
+}
+
+.airview-view-menu summary,
+.airview-new-view summary {
+  border-radius: 4px;
+  color: var(--airview-muted);
+  cursor: pointer;
+  font-size: 13px;
+  list-style: none;
+  padding: 5px 7px;
+}
+
+.airview-view-menu summary::-webkit-details-marker,
+.airview-new-view summary::-webkit-details-marker {
+  display: none;
+}
+
+.airview-view-menu[open] summary,
+.airview-view-menu summary:hover,
+.airview-new-view[open] summary,
+.airview-new-view summary:hover {
+  background: #f2f4f7;
+  color: var(--airview-text);
+}
+
+.airview-view-menu-panel,
+.airview-new-view-panel {
+  background: #ffffff;
+  border: 1px solid var(--airview-border);
+  border-radius: 6px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+  display: grid;
+  gap: 8px;
+  left: 0;
+  min-width: 230px;
+  padding: 10px;
+  position: absolute;
+  top: 32px;
+  z-index: 40;
+}
+
+.airview-view-menu-panel {
+  left: auto;
+  right: 0;
+}
+
+.airview-view-edit-form {
+  display: grid;
+  gap: 7px;
+}
+
+.airview-view-edit-form input[type="text"],
+.airview-view-edit-form input[type="search"] {
+  min-height: 30px;
+  width: 100%;
+}
+
+.airview-view-edit-form input[type="submit"] {
+  min-height: 30px;
+}
+
+.airview-view-delete {
+  background: #ffffff !important;
+  border-color: var(--airview-border) !important;
+  color: var(--airview-danger) !important;
+  min-height: 30px;
+  width: 100%;
+}
+
+.airview-new-view {
+  margin-top: 8px;
 }
 
 .airview-main {
   min-width: 0;
-  padding: 18px;
+  padding: 0;
 }
 
-.airview-toolbar {
+.airview-main--grid {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.airview-toolbar,
+.airview-basebar {
   align-items: center;
   display: flex;
   gap: 16px;
   justify-content: space-between;
-  margin-bottom: 14px;
+  padding: 14px 18px 10px;
 }
 
-.airview-toolbar h1 {
+.airview-toolbar h1,
+.airview-basebar h1 {
   font-size: 24px;
   line-height: 1.2;
   margin: 0;
 }
 
-.airview-toolbar p {
+.airview-toolbar p,
+.airview-basebar p {
   color: var(--airview-muted);
   margin: 4px 0 0;
 }
@@ -98,6 +225,214 @@
   border-radius: 8px;
   margin-bottom: 12px;
   padding: 12px;
+}
+
+.airview-gridbar {
+  align-items: center;
+  background: #ffffff;
+  border-bottom: 1px solid var(--airview-border);
+  border-top: 1px solid var(--airview-soft-border);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 46px;
+  padding: 0 18px;
+}
+
+.airview-gridbar-left,
+.airview-gridbar-right {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.airview-view-name {
+  align-items: center;
+  display: inline-flex;
+  font-weight: 600;
+  gap: 6px;
+  min-height: 32px;
+  padding-right: 8px;
+}
+
+.airview-popover {
+  position: relative;
+}
+
+.airview-popover summary {
+  border-radius: 4px;
+  color: #3f4654;
+  cursor: pointer;
+  display: block;
+  font-size: 13px;
+  list-style: none;
+  padding: 7px 10px;
+  user-select: none;
+}
+
+.airview-popover summary::-webkit-details-marker {
+  display: none;
+}
+
+.airview-popover[open] summary,
+.airview-popover summary:hover {
+  background: #f2f4f7;
+}
+
+.airview-popover-panel {
+  background: #ffffff;
+  border: 1px solid var(--airview-border);
+  border-radius: 6px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+  left: 0;
+  padding: 12px;
+  position: absolute;
+  top: 38px;
+  z-index: 20;
+}
+
+.airview-popover-panel--narrow {
+  min-width: 240px;
+}
+
+.airview-popover-panel--filter {
+  min-width: 620px;
+}
+
+.airview-popover-panel--create {
+  max-height: 70vh;
+  min-width: 520px;
+  overflow: auto;
+  right: 0;
+}
+
+.airview-gridbar-right .airview-popover-panel {
+  left: auto;
+  right: 0;
+}
+
+.airview-check-row {
+  align-items: center;
+  display: flex !important;
+  flex-direction: row;
+  gap: 8px;
+  padding: 5px 0;
+}
+
+.airview-check-row input {
+  min-height: auto;
+  width: auto;
+}
+
+.airview-popover-search {
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.airview-field-actions {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.airview-field-actions button {
+  background: #ffffff;
+  border-color: var(--airview-border);
+  color: var(--airview-text);
+  min-height: 28px;
+  padding: 4px 8px;
+}
+
+.airview-field-option-list {
+  max-height: 280px;
+  overflow: auto;
+}
+
+.airview-field-option-list .is-hidden {
+  display: none !important;
+}
+
+.airview-filter-title {
+  color: var(--airview-muted);
+  margin-bottom: 12px;
+}
+
+.airview-filter-condition {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto 150px 132px minmax(160px, 1fr) auto;
+  margin-bottom: 4px;
+}
+
+.airview-filter-field-picker {
+  min-width: 0;
+  position: relative;
+}
+
+.airview-filter-field-picker input {
+  width: 100%;
+}
+
+.airview-filter-field-results {
+  background: #ffffff;
+  border: 1px solid var(--airview-border);
+  border-radius: 6px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+  display: none;
+  left: 0;
+  max-height: 230px;
+  overflow: auto;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 45;
+}
+
+.airview-filter-field-results.is-open {
+  display: grid;
+}
+
+.airview-filter-field-option {
+  background: #ffffff !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--airview-soft-border) !important;
+  border-radius: 0 !important;
+  color: var(--airview-text) !important;
+  min-height: 30px;
+  overflow: hidden;
+  padding: 6px 9px !important;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.airview-filter-field-option:hover,
+.airview-filter-field-option:focus {
+  background: #f5f8ff !important;
+}
+
+.airview-filter-field-option.is-hidden {
+  display: none;
+}
+
+.airview-filter-remove {
+  background: #ffffff !important;
+  border-color: transparent !important;
+  color: var(--airview-danger) !important;
+  min-height: 30px;
+}
+
+.airview-filter-actions {
+  margin: 8px 0;
+}
+
+.airview-filter-actions button {
+  background: #ffffff;
+  border-color: var(--airview-border);
+  color: var(--airview-accent-strong);
+  min-height: 30px;
 }
 
 .airview-views {
@@ -186,33 +521,85 @@
 
 .airview-grid-wrap {
   background: var(--airview-panel);
-  border: 1px solid var(--airview-border);
-  border-radius: 8px;
+  border: 0;
+  border-radius: 0;
   overflow: auto;
 }
 
 .airview-grid {
   border-collapse: separate;
   border-spacing: 0;
+  table-layout: fixed;
   min-width: 900px;
   width: 100%;
+}
+
+.airview-grid col {
+  width: 170px;
+}
+
+.airview-grid .airview-actions-col {
+  width: 96px;
+}
+
+.airview-grid .airview-expand-col {
+  width: 42px;
 }
 
 .airview-grid th,
 .airview-grid td {
   border-bottom: 1px solid var(--airview-border);
   border-right: 1px solid var(--airview-border);
-  min-width: 180px;
-  padding: 8px;
+  height: 31px;
+  padding: 4px 8px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .airview-grid th {
-  background: #eef2f7;
+  background: #fbfcfe;
+  color: #1f2937;
+  font-size: 13px;
+  font-weight: 600;
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.airview-grid th:first-child,
+.airview-grid td:first-child {
+  left: 0;
+  position: sticky;
+  z-index: 2;
+}
+
+.airview-expand-cell {
+  min-width: 42px;
+  text-align: center !important;
+  width: 42px;
+}
+
+.airview-expand-button {
+  border-radius: 4px;
+  color: var(--airview-muted);
+  display: inline-grid;
+  height: 24px;
+  place-items: center;
+  text-decoration: none;
+  width: 24px;
+}
+
+.airview-expand-button:hover {
+  background: #eef4ff;
+  color: var(--airview-accent-strong);
+}
+
+.airview-grid td:first-child {
+  background: #ffffff;
+}
+
+.airview-grid th:first-child {
+  z-index: 3;
 }
 
 .airview-grid th[data-airview-column] {
@@ -232,6 +619,90 @@
   background: #99f6e4;
 }
 
+.airview-column-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.airview-sort-link {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.airview-column-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.airview-sort-link.is-active {
+  color: var(--airview-accent-strong);
+}
+
+.airview-sort-indicator {
+  color: var(--airview-accent-strong);
+  flex: 0 0 auto;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.airview-column-menu {
+  position: relative;
+}
+
+.airview-column-menu summary {
+  border-radius: 4px;
+  cursor: pointer;
+  list-style: none;
+  padding: 0 5px;
+}
+
+.airview-column-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.airview-column-menu[open] summary,
+.airview-column-menu summary:hover {
+  background: #e9edf5;
+}
+
+.airview-column-menu-panel {
+  background: #ffffff;
+  border: 1px solid var(--airview-border);
+  border-radius: 6px;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.16);
+  display: grid;
+  gap: 2px;
+  min-width: 132px;
+  padding: 6px;
+  position: absolute;
+  right: 0;
+  top: 24px;
+  z-index: 30;
+}
+
+.airview-column-menu-panel form,
+.airview-column-menu-panel button {
+  width: 100%;
+}
+
+.airview-column-menu-panel button {
+  background: transparent;
+  border: 0;
+  color: var(--airview-text);
+  min-height: 28px;
+  text-align: left;
+}
+
+.airview-column-menu-panel button:hover {
+  background: #f2f4f7;
+}
+
 .airview-grid td:focus-within,
 .airview-grid td:focus {
   outline: 2px solid var(--airview-accent);
@@ -241,16 +712,18 @@
 .airview-grid input,
 .airview-grid select,
 .airview-grid textarea {
-  min-width: 120px;
+  border-color: transparent;
+  min-height: 28px;
+  min-width: 0;
+  padding: 3px 5px;
   width: 100%;
 }
 
 .airview-cell-form input[type="submit"] {
-  min-width: 54px;
+  display: none;
 }
 
 .airview-actions {
-  min-width: 96px;
   width: 96px;
 }
 
@@ -260,6 +733,437 @@
   min-height: 34px;
   overflow-wrap: anywhere;
   padding: 7px 0;
+}
+
+.airview-cell-text {
+  display: block;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.airview-check {
+  border: 1px solid #b8c0cc;
+  border-radius: 3px;
+  display: inline-grid;
+  height: 17px;
+  place-items: center;
+  width: 17px;
+}
+
+.airview-check.is-on {
+  background: #e8f7ee;
+  border-color: #84d29c;
+  color: #15803d;
+  font-weight: 700;
+}
+
+.airview-pill {
+  background: #e9edf5;
+  border-radius: 999px;
+  display: inline-block;
+  max-width: 260px;
+  overflow: hidden;
+  padding: 2px 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.airview-reference-pill,
+.airview-reference-empty {
+  background: #e9edf5;
+  border-radius: 999px;
+  display: inline-block;
+  max-width: 260px;
+  overflow: hidden;
+  padding: 2px 9px;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.airview-reference-empty {
+  background: transparent;
+  color: var(--airview-muted);
+}
+
+.airview-reference-list {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.airview-reference-list--cards {
+  gap: 6px;
+}
+
+.airview-reference-count {
+  background: #f2f4f7;
+  border-radius: 999px;
+  color: var(--airview-muted);
+  display: inline-block;
+  flex: 0 0 auto;
+  padding: 2px 7px;
+  text-decoration: none;
+}
+
+.airview-reference-count--link:hover {
+  background: #e9edf5;
+  color: var(--airview-accent-strong);
+}
+
+.airview-attachment {
+  align-items: center;
+  color: var(--airview-accent-strong);
+  display: inline-flex;
+  max-width: 100%;
+  text-decoration: none;
+}
+
+.airview-attachment-thumb {
+  border: 1px solid var(--airview-border);
+  border-radius: 4px;
+  display: block;
+  height: 28px;
+  object-fit: cover;
+  width: 40px;
+}
+
+.airview-attachment-file {
+  background: #e9edf5;
+  border-radius: 999px;
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  padding: 2px 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.airview-reference-preview {
+  background: #f8fafc;
+  border: 1px solid var(--airview-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+
+.airview-reference-preview--compact {
+  flex: 0 0 auto;
+  gap: 2px;
+  max-width: 155px;
+  min-width: 112px;
+  padding: 6px 9px;
+}
+
+.airview-reference-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.airview-reference-card-link:hover {
+  background: #eef4ff;
+  border-color: #b7cffb;
+}
+
+.airview-reference-preview.is-empty {
+  color: var(--airview-muted);
+}
+
+.airview-reference-preview-title {
+  font-weight: 600;
+}
+
+.airview-reference-preview-details {
+  color: var(--airview-muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.airview-reference-open {
+  color: var(--airview-accent-strong);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.airview-reference-picker {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  position: relative;
+}
+
+.airview-reference-picker input {
+  flex: 1 1 auto;
+}
+
+.airview-reference-results {
+  background: #ffffff;
+  border: 1px solid var(--airview-border);
+  border-radius: 6px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+  display: none;
+  left: 0;
+  max-height: 280px;
+  overflow: auto;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 50;
+}
+
+.airview-reference-results.is-open {
+  display: grid;
+}
+
+.airview-reference-result {
+  background: #ffffff !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--airview-soft-border) !important;
+  border-radius: 0 !important;
+  color: var(--airview-text) !important;
+  display: grid;
+  gap: 3px;
+  min-height: 48px;
+  padding: 7px 10px !important;
+  text-align: left;
+  width: 100%;
+}
+
+.airview-reference-result:hover,
+.airview-reference-result:focus {
+  background: #f5f8ff !important;
+}
+
+.airview-reference-result-title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.airview-reference-result-meta,
+.airview-reference-no-results {
+  color: var(--airview-muted);
+  font-size: 12px;
+}
+
+.airview-reference-no-results {
+  padding: 10px;
+}
+
+.airview-reference-clear {
+  background: #ffffff !important;
+  border-color: var(--airview-border) !important;
+  color: var(--airview-muted) !important;
+}
+
+.airview-empty-value {
+  color: #a6adbb;
+}
+
+.airview-modal-backdrop {
+  align-items: stretch;
+  background: rgba(15, 23, 42, 0.38);
+  display: flex;
+  inset: 0;
+  justify-content: flex-end;
+  position: fixed;
+  z-index: 100;
+}
+
+.airview-record-modal {
+  background: #ffffff;
+  box-shadow: -18px 0 42px rgba(15, 23, 42, 0.18);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-width: 760px;
+  width: min(760px, 100vw);
+}
+
+.airview-record-modal-header {
+  align-items: center;
+  border-bottom: 1px solid var(--airview-border);
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 22px;
+}
+
+.airview-record-modal-header h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.airview-record-modal-header p {
+  color: var(--airview-muted);
+  margin: 3px 0 0;
+}
+
+.airview-modal-close {
+  border-radius: 6px;
+  color: var(--airview-muted);
+  font-size: 26px;
+  line-height: 1;
+  padding: 4px 9px;
+  text-decoration: none;
+}
+
+.airview-modal-close:hover {
+  background: #f2f4f7;
+}
+
+.airview-record-form {
+  display: grid;
+  gap: 0;
+  overflow: auto;
+  padding: 8px 22px 22px;
+}
+
+.airview-record-field {
+  border-bottom: 1px solid var(--airview-soft-border);
+  padding: 12px 0;
+}
+
+.airview-record-field.is-hidden {
+  display: none;
+}
+
+.airview-record-hidden-fields {
+  border-bottom: 1px solid var(--airview-soft-border);
+  padding: 10px 0;
+}
+
+.airview-record-hidden-fields summary {
+  border-radius: 4px;
+  color: var(--airview-muted);
+  cursor: pointer;
+  display: inline-block;
+  font-size: 13px;
+  list-style: none;
+  padding: 6px 8px;
+}
+
+.airview-record-hidden-fields summary::-webkit-details-marker {
+  display: none;
+}
+
+.airview-record-hidden-fields[open] summary,
+.airview-record-hidden-fields summary:hover {
+  background: #f2f4f7;
+  color: var(--airview-text);
+}
+
+.airview-record-hidden-picker {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin-top: 8px;
+}
+
+.airview-record-field label {
+  color: var(--airview-text);
+  display: grid;
+  gap: 7px;
+}
+
+.airview-record-field label > span {
+  color: var(--airview-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.airview-record-field input,
+.airview-record-field select,
+.airview-record-field textarea {
+  width: 100%;
+}
+
+.airview-record-readonly {
+  min-height: 34px;
+  padding: 7px 0;
+}
+
+.airview-record-modal-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  padding-top: 16px;
+}
+
+.airview-danger-link {
+  color: var(--airview-danger);
+  text-decoration: none;
+}
+
+.airview-danger-link:hover {
+  text-decoration: underline;
+}
+
+.airview-danger-button {
+  background: var(--airview-danger) !important;
+  border-color: var(--airview-danger) !important;
+}
+
+.airview-delete-modal {
+  max-width: 620px;
+}
+
+.airview-delete-body {
+  overflow: auto;
+  padding: 18px 22px 0;
+}
+
+.airview-delete-body code {
+  background: #f2f4f7;
+  border-radius: 4px;
+  padding: 2px 5px;
+}
+
+.airview-delete-impact-list {
+  border: 1px solid var(--airview-border);
+  border-radius: 8px;
+  display: grid;
+  margin: 14px 0;
+}
+
+.airview-delete-impact {
+  display: grid;
+  gap: 3px;
+  padding: 11px 12px;
+}
+
+.airview-delete-impact + .airview-delete-impact {
+  border-top: 1px solid var(--airview-soft-border);
+}
+
+.airview-delete-impact span,
+.airview-delete-impact small,
+.airview-delete-note,
+.airview-delete-empty {
+  color: var(--airview-muted);
+}
+
+.airview-delete-empty {
+  background: #f8fafc;
+  border: 1px solid var(--airview-border);
+  border-radius: 8px;
+  margin: 14px 0;
+  padding: 12px;
+}
+
+.airview-delete-actions {
+  padding: 16px 22px 22px;
+}
+
+.airview-add-row td {
+  color: var(--airview-muted);
+  font-size: 20px;
 }
 
 .airview-link-button {
@@ -316,5 +1220,20 @@
   .airview-toolbar {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .airview-main--grid {
+    height: auto;
+    overflow: visible;
+  }
+
+  .airview-gridbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .airview-popover-panel {
+    min-width: calc(100vw - 32px);
   }
 }

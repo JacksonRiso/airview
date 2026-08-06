@@ -1,0 +1,49 @@
+<div class="airview-modal-backdrop" data-airview-modal>
+  <section class="airview-record-modal airview-delete-modal" role="dialog" aria-modal="true" aria-labelledby="airview-delete-modal-title">
+    <header class="airview-record-modal-header">
+      <div>
+        <h2 id="airview-delete-modal-title">Delete <%= @resource.record_label(record).presence || "#{@resource.label} ##{record.id}" %></h2>
+        <p>This action cannot be undone.</p>
+      </div>
+      <%= link_to "×", airview_modal_close_path, class: "airview-modal-close", data: { airview_modal_close: true } %>
+    </header>
+
+    <div class="airview-delete-body">
+      <p>
+        Airview will call <code>destroy!</code> on this record, so Rails callbacks and configured dependent associations will run.
+      </p>
+
+      <% impacts = airview_delete_impacts(record) %>
+      <% if impacts.any? %>
+        <div class="airview-delete-impact-list">
+          <% impacts.each do |impact| %>
+            <div class="airview-delete-impact">
+              <strong><%= impact[:name] %></strong>
+              <span>
+                <% if impact[:count].nil? %>
+                  Related records could not be counted and will be <%= impact[:action] %>.
+                <% else %>
+                  <%= pluralize(impact[:count], "related record") %> will be <%= impact[:action] %>.
+                <% end %>
+              </span>
+              <small>dependent: <%= impact[:dependent] %></small>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="airview-delete-empty">
+          No dependent associations are configured on this model.
+        </div>
+      <% end %>
+
+      <p class="airview-delete-note">
+        Database foreign keys, validations, callbacks, and custom model code may still prevent deletion or affect additional records.
+      </p>
+    </div>
+
+    <footer class="airview-record-modal-actions airview-delete-actions">
+      <%= button_to "Delete record", resource_record_path(@resource.key, record, return_to: params[:return_to]), method: :delete, class: "airview-danger-button" %>
+      <%= link_to "Cancel", airview_modal_close_path %>
+    </footer>
+  </section>
+</div>

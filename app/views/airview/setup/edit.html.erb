@@ -5,7 +5,7 @@
     <header class="airview-toolbar">
       <div>
         <h1>Edit <%= @definition.label %></h1>
-        <p><%= @definition.model_name %></p>
+        <p><%= @definition.record_class_name %></p>
       </div>
 
       <%= button_to "Remove resource", setup_resource_path(@definition), method: :delete, form: { data: { turbo_confirm: "Remove this Airview resource?" } } %>

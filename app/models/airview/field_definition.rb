@@ -14,5 +14,9 @@ module Airview
     validates :field_type, inclusion: { in: Airview::Field::TYPES.map(&:to_s) }
 
     scope :visible, -> { where(visible: true) }
+
+    def default_visible?
+      metadata.fetch("default_visible", true)
+    end
   end
 end

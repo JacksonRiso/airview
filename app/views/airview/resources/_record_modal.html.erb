@@ -1,0 +1,62 @@
+<div class="airview-modal-backdrop" data-airview-modal>
+  <section class="airview-record-modal" role="dialog" aria-modal="true" aria-labelledby="airview-record-modal-title">
+    <header class="airview-record-modal-header">
+      <div>
+        <h2 id="airview-record-modal-title"><%= @resource.record_label(record).presence || "#{@resource.label} ##{record.id}" %></h2>
+        <p><%= @resource.label %> record</p>
+      </div>
+      <%= link_to "×", airview_modal_close_path, class: "airview-modal-close", data: { airview_modal_close: true } %>
+    </header>
+
+    <% visible_modal_fields = Array(@visible_fields) %>
+    <% hidden_modal_fields = @resource.fields.values - visible_modal_fields %>
+
+    <%= form_with url: resource_record_path(@resource.key, record), method: :patch, class: "airview-record-form" do %>
+      <% visible_modal_fields.each do |field| %>
+        <div class="airview-record-field">
+          <label>
+            <span><%= field.label %></span>
+            <% if field.editable? %>
+              <%= airview_input_for(record, field) %>
+            <% else %>
+              <div class="airview-record-readonly"><%= airview_cell_value(record, field) %></div>
+            <% end %>
+          </label>
+        </div>
+      <% end %>
+
+      <% if hidden_modal_fields.any? %>
+        <details class="airview-record-hidden-fields">
+          <summary>Hidden fields</summary>
+          <div class="airview-record-hidden-picker">
+            <% hidden_modal_fields.each do |field| %>
+              <label class="airview-check-row">
+                <%= check_box_tag nil, field.name, false, data: { airview_modal_field_toggle: field.name } %>
+                <span><%= field.label %></span>
+              </label>
+            <% end %>
+          </div>
+        </details>
+
+        <% hidden_modal_fields.each do |field| %>
+          <div class="airview-record-field is-hidden" data-airview-modal-hidden-field="<%= field.name %>">
+            <label>
+              <span><%= field.label %></span>
+              <% if field.editable? %>
+                <%= airview_input_for(record, field) %>
+              <% else %>
+                <div class="airview-record-readonly"><%= airview_cell_value(record, field) %></div>
+              <% end %>
+            </label>
+          </div>
+        <% end %>
+      <% end %>
+
+      <footer class="airview-record-modal-actions">
+        <%= submit_tag "Save changes" %>
+        <%= link_to "Delete...", request.path + "?#{request.query_parameters.except(:record_id).merge(delete_record_id: record.id).to_query}", class: "airview-danger-link" %>
+        <%= link_to "Cancel", airview_modal_close_path %>
+      </footer>
+    <% end %>
+  </section>
+</div>

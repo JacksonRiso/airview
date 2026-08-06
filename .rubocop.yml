@@ -26,3 +26,9 @@ Metrics/ParameterLists:
 
 Metrics/ClassLength:
   Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false

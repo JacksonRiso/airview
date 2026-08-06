@@ -1,76 +1,212 @@
 <div class="airview-shell">
-  <%= render "airview/shared/sidebar", resources: @resources, active: :resource %>
+  <%= render "airview/shared/sidebar", resources: @resources, views: @views, active: :resource %>
 
-  <main class="airview-main">
-    <header class="airview-toolbar">
+  <main class="airview-main airview-main--grid">
+    <header class="airview-basebar">
       <div>
         <h1><%= @resource.label %></h1>
         <p><%= number_with_delimiter(@query.count) %> records</p>
       </div>
 
-      <%= form_with url: resource_path(@resource.key), method: :get, class: "airview-search" do %>
+      <%= form_with url: (@active_view ? resource_view_records_path(@resource.key, @active_view) : resource_path(@resource.key)), method: :get, class: "airview-search" do %>
+        <% @visible_fields.each do |field| %>
+          <%= hidden_field_tag "columns[]", field.name unless @active_view %>
+        <% end %>
+        <% @filter_conditions.each_with_index do |condition, index| %>
+          <%= hidden_field_tag "filters[#{index}][field]", condition["field"] %>
+          <%= hidden_field_tag "filters[#{index}][operator]", condition["operator"] %>
+          <%= hidden_field_tag "filters[#{index}][value]", condition["value"] %>
+        <% end %>
         <%= search_field_tag :q, params[:q], placeholder: "Search", autocomplete: "off" %>
         <%= submit_tag "Search" %>
       <% end %>
     </header>
 
-    <section class="airview-views">
-      <%= link_to "Default view", resource_path(@resource.key), class: "airview-view-pill is-active" %>
-      <% @views.each do |view| %>
-        <%= link_to view.name, resource_path(@resource.key, filters: view.filters, sort: view.sorts&.dig("sort"), direction: view.sorts&.dig("direction")), class: "airview-view-pill" %>
-        <%= button_to "Delete", resource_view_path(@resource.key, view), method: :delete, class: "airview-link-button" %>
-      <% end %>
+    <section class="airview-gridbar">
+      <div class="airview-gridbar-left">
+        <span class="airview-view-name">▦ <%= @active_view&.name || "Default view" %></span>
 
-      <%= form_with url: resource_views_path(@resource.key), method: :post, class: "airview-save-view" do %>
-        <%= hidden_field_tag :q, params[:q] %>
-        <%= hidden_field_tag :sort, params[:sort] %>
-        <%= hidden_field_tag :direction, params[:direction] %>
-        <% params.fetch(:filters, {}).each do |key, value| %>
-          <%= hidden_field_tag "filters[#{key}]", value %>
+        <details class="airview-popover">
+          <summary>Hide fields</summary>
+          <div class="airview-popover-panel airview-popover-panel--narrow">
+            <% if @active_view %>
+              <%= form_with url: resource_view_path(@resource.key, @active_view), method: :patch do %>
+                <%= hidden_field_tag :columns_present, "1" %>
+                <% @filter_conditions.each_with_index do |condition, index| %>
+                  <%= hidden_field_tag "filters[#{index}][field]", condition["field"] %>
+                  <%= hidden_field_tag "filters[#{index}][operator]", condition["operator"] %>
+                  <%= hidden_field_tag "filters[#{index}][value]", condition["value"] %>
+                <% end %>
+                <%= hidden_field_tag :sort, params[:sort] || @active_view.sorts&.dig("sort") %>
+                <%= hidden_field_tag :direction, params[:direction] || @active_view.sorts&.dig("direction") %>
+                <%= search_field_tag nil, nil, placeholder: "Find a field", class: "airview-popover-search", data: { airview_field_list_search: true } %>
+                <div class="airview-field-actions">
+                  <button type="button" data-airview-fields-hide-all>Hide all</button>
+                  <button type="button" data-airview-fields-show-all>Show all</button>
+                </div>
+                <div class="airview-field-option-list">
+                  <% @sorted_fields.each do |field| %>
+                    <label class="airview-check-row" data-airview-field-list-item="<%= "#{field.label} #{field.name}".downcase %>">
+                      <%= check_box_tag "columns[]", field.name, @visible_fields.include?(field) %>
+                      <span><%= field.label %></span>
+                    </label>
+                  <% end %>
+                </div>
+                <%= submit_tag "Apply" %>
+              <% end %>
+            <% else %>
+              <%= form_with url: resource_path(@resource.key), method: :get do %>
+                <%= hidden_field_tag :columns_present, "1" %>
+                <% @filter_conditions.each_with_index do |condition, index| %>
+                  <%= hidden_field_tag "filters[#{index}][field]", condition["field"] %>
+                  <%= hidden_field_tag "filters[#{index}][operator]", condition["operator"] %>
+                  <%= hidden_field_tag "filters[#{index}][value]", condition["value"] %>
+                <% end %>
+                <%= hidden_field_tag :sort, params[:sort] %>
+                <%= hidden_field_tag :direction, params[:direction] %>
+                <%= search_field_tag nil, nil, placeholder: "Find a field", class: "airview-popover-search", data: { airview_field_list_search: true } %>
+                <div class="airview-field-actions">
+                  <button type="button" data-airview-fields-hide-all>Hide all</button>
+                  <button type="button" data-airview-fields-show-all>Show all</button>
+                </div>
+                <div class="airview-field-option-list">
+                  <% @sorted_fields.each do |field| %>
+                    <label class="airview-check-row" data-airview-field-list-item="<%= "#{field.label} #{field.name}".downcase %>">
+                      <%= check_box_tag "columns[]", field.name, @visible_fields.include?(field) %>
+                      <span><%= field.label %></span>
+                    </label>
+                  <% end %>
+                </div>
+                <%= submit_tag "Apply" %>
+              <% end %>
+            <% end %>
+          </div>
+        </details>
+
+        <details class="airview-popover">
+          <summary>Filter</summary>
+          <div class="airview-popover-panel airview-popover-panel--filter">
+            <%= form_with url: (@active_view ? resource_view_path(@resource.key, @active_view) : resource_path(@resource.key)), method: (@active_view ? :patch : :get) do %>
+              <% @visible_fields.each do |field| %>
+                <%= hidden_field_tag "columns[]", field.name %>
+              <% end %>
+              <%= hidden_field_tag :filters_present, "1" %>
+              <%= hidden_field_tag :sort, params[:sort] || @active_view&.sorts&.dig("sort") %>
+              <%= hidden_field_tag :direction, params[:direction] || @active_view&.sorts&.dig("direction") %>
+              <div class="airview-filter-title">In this view, show <%= @resource.label.downcase %></div>
+              <% rows = @filter_conditions %>
+              <% rows.each_with_index do |condition, index| %>
+                <% field = @resource.fields[(condition["field"] || condition[:field]).to_s.to_sym] || @visible_fields.first %>
+                <div class="airview-filter-condition" data-airview-filter-condition>
+                  <span>Where</span>
+                  <%= airview_filter_field_picker(index, field) %>
+                  <%= select_tag "filters[#{index}][operator]", airview_filter_operator_options(field, condition["operator"] || condition[:operator]) %>
+                  <%= airview_filter_value_input(index, field, condition["value"] || condition[:value]) %>
+                  <button type="button" class="airview-filter-remove" data-airview-remove-filter>Remove</button>
+                </div>
+              <% end %>
+              <% template_field = @visible_fields.first %>
+              <template data-airview-filter-template>
+                <div class="airview-filter-condition" data-airview-filter-condition>
+                  <span>Where</span>
+                  <%= airview_filter_field_picker("__INDEX__", template_field) %>
+                  <%= select_tag "filters[__INDEX__][operator]", airview_filter_operator_options(template_field) %>
+                  <%= airview_filter_value_input("__INDEX__", template_field) %>
+                  <button type="button" class="airview-filter-remove" data-airview-remove-filter>Remove</button>
+                </div>
+              </template>
+              <div class="airview-filter-actions">
+                <button type="button" data-airview-add-filter>Add condition</button>
+              </div>
+              <%= submit_tag @active_view ? "Save filters" : "Apply filters" %>
+            <% end %>
+          </div>
+        </details>
+
+        <details class="airview-popover">
+          <summary>Sort</summary>
+          <div class="airview-popover-panel airview-popover-panel--narrow">
+            <%= form_with url: (@active_view ? resource_view_path(@resource.key, @active_view) : resource_path(@resource.key)), method: (@active_view ? :patch : :get) do %>
+              <% @visible_fields.each do |field| %>
+                <%= hidden_field_tag "columns[]", field.name %>
+              <% end %>
+              <% @filter_conditions.each_with_index do |condition, index| %>
+                <%= hidden_field_tag "filters[#{index}][field]", condition["field"] %>
+                <%= hidden_field_tag "filters[#{index}][operator]", condition["operator"] %>
+                <%= hidden_field_tag "filters[#{index}][value]", condition["value"] %>
+              <% end %>
+              <label>
+                <span>Field</span>
+                <%= select_tag :sort, options_for_select(@sorted_fields.map { |field| [field.label, field.name] }, params[:sort] || @active_view&.sorts&.dig("sort")), include_blank: true %>
+              </label>
+              <label>
+                <span>Direction</span>
+                <%= select_tag :direction, options_for_select([["Ascending", "asc"], ["Descending", "desc"]], params[:direction] || @active_view&.sorts&.dig("direction")) %>
+              </label>
+              <%= submit_tag @active_view ? "Save sort" : "Apply sort" %>
+            <% end %>
+          </div>
+        </details>
+      </div>
+
+      <div class="airview-gridbar-right">
+        <details class="airview-popover">
+          <summary>Create record</summary>
+          <div class="airview-popover-panel airview-popover-panel--create">
+            <%= form_with url: resource_records_path(@resource.key), method: :post do %>
+              <% @resource.editable_fields.each do |field| %>
+                <label>
+                  <span><%= field.label %></span>
+                  <%= airview_input_for(@record, field) %>
+                </label>
+              <% end %>
+              <%= submit_tag "Create record" %>
+            <% end %>
+          </div>
+        </details>
+
+        <%= form_with url: resource_views_path(@resource.key), method: :post, class: "airview-save-view" do %>
+          <% @visible_fields.each do |field| %>
+            <%= hidden_field_tag "columns[]", field.name %>
+          <% end %>
+          <% @filter_conditions.each_with_index do |condition, index| %>
+            <%= hidden_field_tag "filters[#{index}][field]", condition["field"] %>
+            <%= hidden_field_tag "filters[#{index}][operator]", condition["operator"] %>
+            <%= hidden_field_tag "filters[#{index}][value]", condition["value"] %>
+          <% end %>
+          <%= hidden_field_tag :sort, params[:sort] %>
+          <%= hidden_field_tag :direction, params[:direction] %>
+          <%= text_field_tag :name, nil, placeholder: "New view name" %>
+          <%= submit_tag "Save view" %>
         <% end %>
-        <%= text_field_tag :name, nil, placeholder: "New view name" %>
-        <%= submit_tag "Save view" %>
-      <% end %>
-    </section>
-
-    <section class="airview-filters">
-      <%= form_with url: resource_path(@resource.key), method: :get do %>
-        <%= hidden_field_tag :q, params[:q] %>
-        <div class="airview-filter-grid">
-          <% @resource.fields.each_value do |field| %>
-            <label>
-              <span><%= field.label %></span>
-              <%= text_field_tag "filters[#{field.name}]", params.dig(:filters, field.name), placeholder: "Filter" %>
-            </label>
-          <% end %>
-        </div>
-        <%= submit_tag "Apply filters" %>
-      <% end %>
-    </section>
-
-    <section class="airview-create">
-      <h2>New record</h2>
-      <%= form_with url: resource_records_path(@resource.key), method: :post do %>
-        <div class="airview-create-grid">
-          <% @resource.fields.each_value do |field| %>
-            <% next if field.readonly? %>
-            <label>
-              <span><%= field.label %></span>
-              <%= airview_input_for(@record, field) %>
-            </label>
-          <% end %>
-        </div>
-        <%= submit_tag "Create record" %>
-      <% end %>
+      </div>
     </section>
 
     <section class="airview-grid-wrap" data-airview-grid>
       <table class="airview-grid">
+        <colgroup>
+          <col class="airview-expand-col">
+          <% @visible_fields.each do |field| %>
+            <col data-airview-column-width="<%= field.name %>">
+          <% end %>
+          <col class="airview-actions-col">
+        </colgroup>
         <thead>
           <tr>
-            <% @resource.fields.each_value do |field| %>
+            <th class="airview-expand-cell"></th>
+            <% @visible_fields.each do |field| %>
               <th data-airview-column="<%= field.name %>">
-                <%= airview_sort_link(@resource, field) %>
+                <div class="airview-column-header">
+                  <%= airview_sort_link(@resource, field) %>
+                  <details class="airview-column-menu">
+                    <summary>⋯</summary>
+                    <div class="airview-column-menu-panel">
+                      <%= button_to "Move left", airview_column_action_path, method: airview_column_action_method, params: airview_column_action_params(:left, field) %>
+                      <%= button_to "Move right", airview_column_action_path, method: airview_column_action_method, params: airview_column_action_params(:right, field) %>
+                      <%= button_to "Hide field", airview_column_action_path, method: airview_column_action_method, params: airview_column_action_params(:hide, field) %>
+                    </div>
+                  </details>
+                </div>
                 <span class="airview-column-resizer" data-airview-resizer></span>
               </th>
             <% end %>
@@ -80,34 +216,43 @@
         <tbody>
           <% @records.each do |record| %>
             <tr>
-              <% @resource.fields.each_value do |field| %>
-                <td tabindex="0">
+              <td class="airview-expand-cell">
+                <%= link_to "↗", request.path + "?#{request.query_parameters.merge(record_id: record.id).to_query}", class: "airview-expand-button", title: "Expand record" %>
+              </td>
+              <% @visible_fields.each do |field| %>
+                <td tabindex="0" class="airview-cell airview-cell--<%= field.type %>">
                   <% if field.editable? %>
                     <%= form_with url: resource_record_path(@resource.key, record), method: :patch, class: "airview-cell-form" do %>
                       <%= airview_input_for(record, field) %>
                       <%= submit_tag "Save" %>
                     <% end %>
                   <% else %>
-                    <span class="airview-readonly"><%= airview_field_value(record, field) %></span>
+                    <%= airview_cell_value(record, field) %>
                   <% end %>
                 </td>
               <% end %>
               <td class="airview-actions">
-                <%= button_to "Delete", resource_record_path(@resource.key, record), method: :delete, form: { data: { turbo_confirm: "Delete this record?" } } %>
+                <%= link_to "Delete", request.path + "?#{request.query_parameters.merge(delete_record_id: record.id).to_query}", class: "airview-danger-link" %>
               </td>
             </tr>
           <% end %>
+          <tr class="airview-add-row">
+            <td colspan="<%= @visible_fields.size + 2 %>">+</td>
+          </tr>
         </tbody>
       </table>
     </section>
 
     <footer class="airview-pagination">
       <% if @query.page > 1 %>
-        <%= link_to "Previous", resource_path(@resource.key, request.query_parameters.merge(page: @query.page - 1)) %>
+        <%= link_to "Previous", request.path + "?#{request.query_parameters.merge(page: @query.page - 1).to_query}" %>
       <% end %>
       <% if @records.size == @query.limit %>
-        <%= link_to "Next", resource_path(@resource.key, request.query_parameters.merge(page: @query.page + 1)) %>
+        <%= link_to "Next", request.path + "?#{request.query_parameters.merge(page: @query.page + 1).to_query}" %>
       <% end %>
     </footer>
   </main>
+
+  <%= render "record_modal", record: @expanded_record if @expanded_record %>
+  <%= render "delete_modal", record: @delete_record if @delete_record %>
 </div>

@@ -34,6 +34,10 @@ module Airview
       fields.values.select(&:editable?)
     end
 
+    def default_fields
+      fields.values.select(&:default_visible?)
+    end
+
     def validate!
       raise ConfigurationError, "Airview resource #{key} must define at least one field" if fields.empty?
 
@@ -41,10 +45,7 @@ module Airview
     end
 
     def record_label(record)
-      return "" unless record
-      return record.public_send(label_method).to_s if record.respond_to?(label_method)
-
-      record.to_s
+      Airview.record_label(record, label_method)
     end
   end
 end

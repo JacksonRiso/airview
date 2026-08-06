@@ -13,7 +13,7 @@
       </label>
       <label>
         <span>Model</span>
-        <%= form.text_field :model_name, readonly: definition.persisted? %>
+        <%= form.text_field :record_class_name, readonly: definition.persisted? %>
       </label>
       <label>
         <span>Label</span>
@@ -48,7 +48,7 @@
         <%= form.fields_for :field_definitions do |field_form| %>
           <tr>
             <td><%= field_form.check_box :visible %></td>
-            <td><%= field_form.check_box :readonly %></td>
+            <td><%= field_form.check_box :read_only %></td>
             <td>
               <%= field_form.hidden_field :id if field_form.object.persisted? %>
               <%= field_form.hidden_field :name %>

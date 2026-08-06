@@ -6,7 +6,7 @@ module Airview
 
     def index
       @models = ModelDiscovery.models
-      @definitions_by_model = ResourceDefinition.all.index_by(&:model_name)
+      @definitions_by_model = ResourceDefinition.all.index_by(&:record_class_name)
     end
 
     def new
@@ -22,7 +22,7 @@ module Airview
       if @definition.save
         redirect_to setup_path, notice: "Resource saved"
       else
-        @model = ModelDiscovery.model_named(@definition.model_name)
+        @model = ModelDiscovery.model_named(@definition.record_class_name)
         render :new, status: :unprocessable_entity
       end
     end
@@ -30,7 +30,7 @@ module Airview
     def edit; end
 
     def update
-      if @definition.update(resource_definition_params.except(:key, :model_name))
+      if @definition.update(resource_definition_params.except(:key, :record_class_name))
         redirect_to setup_path, notice: "Resource updated"
       else
         render :edit, status: :unprocessable_entity
@@ -50,17 +50,23 @@ module Airview
 
     def build_definition(model)
       inference = SchemaInference.new(model)
-      ResourceDefinition.new(inference.resource_attributes).tap do |definition|
+      ResourceDefinition.new(normalized_resource_attributes(inference.resource_attributes)).tap do |definition|
         inference.field_attributes.each do |attributes|
           definition.field_definitions.build(attributes)
         end
       end
     end
 
+    def normalized_resource_attributes(attributes)
+      attributes = attributes.dup
+      attributes[:record_class_name] ||= attributes.delete(:model_name)
+      attributes
+    end
+
     def resource_definition_params
       params.require(:resource_definition).permit(
         :key,
-        :model_name,
+        :record_class_name,
         :label,
         :label_method,
         :enabled,
@@ -71,7 +77,7 @@ module Airview
           label
           field_type
           visible
-          readonly
+          read_only
           position
           association_name
           target_model_name

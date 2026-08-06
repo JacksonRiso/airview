@@ -4,6 +4,73 @@
     <%= link_to "Setup", setup_path, class: ["airview-resource-link", ("is-active" if active == :setup)] %>
     <% resources.each do |resource| %>
       <%= link_to resource.label, resource_path(resource.key), class: ["airview-resource-link", ("is-active" if defined?(@resource) && @resource&.key == resource.key)] %>
+      <% if defined?(views) && defined?(@resource) && @resource&.key == resource.key %>
+        <div class="airview-view-list">
+          <%= link_to "▦ Default view", resource_path(resource.key), class: ["airview-view-link", ("is-active" unless defined?(@active_view) && @active_view)] %>
+          <% grouped_views = views.group_by { |view| view.folder.presence } %>
+          <% unfiled_views = grouped_views.delete(nil) || [] %>
+          <% folder_groups = [[nil, unfiled_views]] + grouped_views.sort_by { |folder, _folder_views| folder.downcase } %>
+
+          <% folder_groups.each do |folder, folder_views| %>
+            <% next if folder_views.empty? %>
+            <% if folder.present? %>
+              <div class="airview-view-folder"><%= folder %></div>
+            <% end %>
+            <% folder_views.each do |view| %>
+              <% view_filters = view.filters.is_a?(Hash) ? view.filters.values : Array(view.filters) %>
+              <div class="airview-view-row">
+                <%= link_to "▦ #{view.name}", resource_view_records_path(resource.key, view), class: ["airview-view-link", ("is-active" if defined?(@active_view) && @active_view == view)] %>
+                <details class="airview-view-menu">
+                  <summary>⋯</summary>
+                  <div class="airview-view-menu-panel">
+                    <%= form_with url: resource_view_path(resource.key, view), method: :patch, class: "airview-view-edit-form" do %>
+                      <% view.columns.each do |column| %>
+                        <%= hidden_field_tag "columns[]", column %>
+                      <% end %>
+                      <% view_filters.each_with_index do |condition, index| %>
+                        <%= hidden_field_tag "filters[#{index}][field]", condition["field"] %>
+                        <%= hidden_field_tag "filters[#{index}][operator]", condition["operator"] %>
+                        <%= hidden_field_tag "filters[#{index}][value]", condition["value"] %>
+                      <% end %>
+                      <%= hidden_field_tag :sort, view.sorts&.dig("sort") %>
+                      <%= hidden_field_tag :direction, view.sorts&.dig("direction") %>
+                      <%= text_field_tag :name, view.name, aria: { label: "View name" } %>
+                      <%= text_field_tag :folder, view.folder, placeholder: "Folder", aria: { label: "Folder" } %>
+                      <%= submit_tag "Save" %>
+                    <% end %>
+                    <%= button_to "Delete view", resource_view_path(resource.key, view), method: :delete, class: "airview-view-delete" %>
+                  </div>
+                </details>
+              </div>
+            <% end %>
+          <% end %>
+
+          <details class="airview-new-view">
+            <summary>+ Create view</summary>
+            <div class="airview-new-view-panel">
+              <%= form_with url: resource_views_path(resource.key), method: :post, class: "airview-view-edit-form" do %>
+                <% if defined?(@visible_fields) && @visible_fields %>
+                  <% @visible_fields.each do |field| %>
+                    <%= hidden_field_tag "columns[]", field.name %>
+                  <% end %>
+                <% end %>
+                <% if defined?(@filter_conditions) && @filter_conditions %>
+                  <% @filter_conditions.each_with_index do |condition, index| %>
+                    <%= hidden_field_tag "filters[#{index}][field]", condition["field"] %>
+                    <%= hidden_field_tag "filters[#{index}][operator]", condition["operator"] %>
+                    <%= hidden_field_tag "filters[#{index}][value]", condition["value"] %>
+                  <% end %>
+                <% end %>
+                <%= hidden_field_tag :sort, params[:sort] || @active_view&.sorts&.dig("sort") %>
+                <%= hidden_field_tag :direction, params[:direction] || @active_view&.sorts&.dig("direction") %>
+                <%= text_field_tag :name, nil, placeholder: "View name", aria: { label: "View name" } %>
+                <%= text_field_tag :folder, nil, placeholder: "Folder", aria: { label: "Folder" } %>
+                <%= submit_tag "Create view" %>
+              <% end %>
+            </div>
+          </details>
+        </div>
+      <% end %>
     <% end %>
   </nav>
 </aside>

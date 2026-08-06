@@ -13,9 +13,9 @@ module Airview
 
     accepts_nested_attributes_for :field_definitions, allow_destroy: true
 
-    validates :key, :model_name, :label, presence: true
+    validates :key, :record_class_name, :label, presence: true
     validates :key, uniqueness: true
-    validates :model_name, uniqueness: true
+    validates :record_class_name, uniqueness: true
     validate :key_is_immutable, on: :update
     validate :model_is_discoverable
     validate :enabled_resource_has_visible_fields
@@ -23,7 +23,7 @@ module Airview
     scope :enabled, -> { where(enabled: true) }
 
     def model_class
-      model_name.constantize
+      record_class_name.constantize
     end
 
     private
@@ -33,9 +33,9 @@ module Airview
     end
 
     def model_is_discoverable
-      return if Airview::ModelDiscovery.model_named(model_name)
+      return if Airview::ModelDiscovery.model_named(record_class_name)
 
-      errors.add(:model_name, "must be a concrete ActiveRecord model with a table")
+      errors.add(:record_class_name, "must be a concrete ActiveRecord model with a table")
     end
 
     def enabled_resource_has_visible_fields

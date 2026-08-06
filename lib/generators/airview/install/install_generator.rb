@@ -15,11 +15,23 @@ module Airview
       end
 
       def copy_migration
-        migration_template "create_airview_views.rb", "db/migrate/create_airview_views.rb"
+        if migration_exists?("create_airview_views")
+          unless migration_exists?("add_folders_to_airview_views")
+            migration_template "add_folders_to_airview_views.rb", "db/migrate/add_folders_to_airview_views.rb"
+          end
+        else
+          migration_template "create_airview_views.rb", "db/migrate/create_airview_views.rb"
+        end
       end
 
-      def self.next_migration_number(dirname)
-        ActiveRecord::Generators::Base.next_migration_number(dirname)
+      def self.next_migration_number(_dirname)
+        Time.now.utc.strftime("%Y%m%d%H%M%S")
+      end
+
+      private
+
+      def migration_exists?(name)
+        Dir.glob(File.join(destination_root, "db/migrate/*_#{name}.rb")).any?
       end
     end
   end

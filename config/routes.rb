@@ -11,11 +11,13 @@ Airview::Engine.routes.draw do
   delete "/setup/resources/:id", to: "setup#destroy"
 
   get "/resources", to: "resources#index", as: :resources
+  get "/resources/:key/views/:view_id", to: "resources#show", as: :resource_view_records
   get "/resources/:key", to: "resources#show", as: :resource
   post "/resources/:key/records", to: "resources#create", as: :resource_records
   patch "/resources/:key/records/:id", to: "resources#update", as: :resource_record
   delete "/resources/:key/records/:id", to: "resources#destroy"
   get "/resources/:key/references/:field", to: "resources#references", as: :resource_references
   post "/resources/:key/views", to: "views#create", as: :resource_views
+  patch "/resources/:key/views/:id", to: "views#update"
   delete "/resources/:key/views/:id", to: "views#destroy", as: :resource_view
 end
