@@ -8,7 +8,10 @@
         <p><%= @definition.record_class_name %></p>
       </div>
 
-      <%= button_to "Remove resource", setup_resource_path(@definition), method: :delete, form: { data: { turbo_confirm: "Remove this Airview resource?" } } %>
+      <div class="airview-toolbar-actions">
+        <%= button_to "Sync fields", sync_setup_resource_path(@definition), method: :post %>
+        <%= button_to "Remove resource", setup_resource_path(@definition), method: :delete, form: { data: { turbo_confirm: "Remove this Airview resource?" } } %>
+      </div>
     </header>
 
     <%= render "form", definition: @definition, url: setup_resource_path(@definition), method: :patch %>

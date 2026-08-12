@@ -35,6 +35,7 @@ class AirviewResourceBuilderTest < Minitest::Test
     :target_label_method,
     :association_name,
     :default_visible,
+    :position,
     keyword_init: true
   ) do
     def read_only?
@@ -53,10 +54,29 @@ class AirviewResourceBuilderTest < Minitest::Test
     :label_method,
     :field_definitions,
     keyword_init: true
-  )
+  ) do
+    def model_class
+      record_class_name.constantize
+    end
+  end
+
+  class CapturingFieldDefinitions < FakeFieldDefinitions
+    attr_reader :created
+
+    def initialize(fields)
+      super
+      @created = []
+    end
+
+    def create!(attributes)
+      @created << attributes
+    end
+  end
 
   class CompanyLocation
     class << self
+      attr_accessor :test_columns
+
       def model_name
         Struct.new(:human).new("Company location")
       end
@@ -66,7 +86,11 @@ class AirviewResourceBuilderTest < Minitest::Test
       end
 
       def columns
-        []
+        test_columns || []
+      end
+
+      def primary_key
+        "id"
       end
 
       def reflect_on_association(name)
@@ -122,6 +146,35 @@ class AirviewResourceBuilderTest < Minitest::Test
     assert_empty resource.stale_fields
   end
 
+  def test_setup_sync_creates_missing_inferred_fields_without_recreating_existing_fields
+    fields = CapturingFieldDefinitions.new([fake_field(:name, :string)])
+    definition = FakeDefinition.new(
+      key: "company_locations",
+      record_class_name: "AirviewResourceBuilderTest::CompanyLocation",
+      label: "Company locations",
+      label_method: nil,
+      field_definitions: fields
+    )
+
+    CompanyLocation.test_columns = [
+      FakeColumn.new("id", :integer, "integer", false, nil),
+      FakeColumn.new("name", :string, "varchar", true, nil),
+      FakeColumn.new("new_column", :boolean, "boolean", true, nil)
+    ]
+
+    begin
+      added_count = Airview::ResourceSynchronizer.new(definition).sync_missing_fields
+      created_names = fields.created.map { |attributes| attributes.fetch(:name) }
+      created_positions = fields.created.map { |attributes| attributes.fetch(:position) }
+
+      assert_equal 2, added_count
+      assert_equal %w[id new_column], created_names
+      assert_equal [1, 2], created_positions
+    ensure
+      CompanyLocation.test_columns = nil
+    end
+  end
+
   private
 
   def build_resource(fields:)
@@ -142,7 +195,8 @@ class AirviewResourceBuilderTest < Minitest::Test
       field_type: type.to_s,
       label: name.to_s.humanize,
       read_only: false,
-      default_visible: true
+      default_visible: true,
+      position: 0
     )
   end
 end

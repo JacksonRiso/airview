@@ -2,7 +2,7 @@
 
 module Airview
   class SetupController < ApplicationController
-    before_action :set_definition, only: %i[edit update destroy]
+    before_action :set_definition, only: %i[edit update sync destroy]
 
     def index
       @models = ModelDiscovery.models
@@ -35,6 +35,12 @@ module Airview
       else
         render :edit, status: :unprocessable_entity
       end
+    end
+
+    def sync
+      added_count = ResourceSynchronizer.new(@definition).sync_missing_fields
+      field_label = "field".pluralize(added_count)
+      redirect_to edit_setup_resource_path(@definition), notice: "#{added_count} #{field_label} added"
     end
 
     def destroy

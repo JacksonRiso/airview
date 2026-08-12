@@ -474,6 +474,13 @@
   gap: 12px;
 }
 
+.airview-toolbar-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .airview-setup-table .airview-actions,
 .airview-setup-fields .airview-actions {
   white-space: nowrap;

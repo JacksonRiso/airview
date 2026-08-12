@@ -13,6 +13,7 @@ require_relative "airview/resource"
 require_relative "airview/query"
 require_relative "airview/model_discovery"
 require_relative "airview/resource_builder"
+require_relative "airview/resource_synchronizer"
 require_relative "airview/schema_inference"
 require_relative "airview/engine" if defined?(Rails)
 

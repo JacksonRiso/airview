@@ -8,6 +8,7 @@ Airview::Engine.routes.draw do
   post "/setup/resources", to: "setup#create", as: :setup_resources
   get "/setup/resources/:id/edit", to: "setup#edit", as: :edit_setup_resource
   patch "/setup/resources/:id", to: "setup#update", as: :setup_resource
+  post "/setup/resources/:id/sync", to: "setup#sync", as: :sync_setup_resource
   delete "/setup/resources/:id", to: "setup#destroy"
 
   get "/resources", to: "resources#index", as: :resources
