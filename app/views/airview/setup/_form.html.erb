@@ -37,6 +37,7 @@
           <th>Visible</th>
           <th>Readonly</th>
           <th>Name</th>
+          <th>Status</th>
           <th>Label</th>
           <th>Type</th>
           <th>Order</th>
@@ -46,8 +47,9 @@
       </thead>
       <tbody>
         <%= form.fields_for :field_definitions do |field_form| %>
+          <% stale = field_form.object.stale? %>
           <tr>
-            <td><%= field_form.check_box :visible %></td>
+            <td><%= field_form.check_box :visible, disabled: stale %></td>
             <td><%= field_form.check_box :read_only %></td>
             <td>
               <%= field_form.hidden_field :id if field_form.object.persisted? %>
@@ -55,6 +57,7 @@
               <%= field_form.hidden_field :association_name %>
               <%= field_form.object.name %>
             </td>
+            <td><%= stale ? field_form.object.stale_reason : "Available" %></td>
             <td><%= field_form.text_field :label %></td>
             <td><%= field_form.select :field_type, Airview::Field::TYPES.map { |type| [type.to_s.humanize, type] } %></td>
             <td><%= field_form.number_field :position, min: 0 %></td>

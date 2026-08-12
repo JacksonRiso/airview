@@ -3,6 +3,8 @@
 module Airview
   module ApplicationHelper
     def airview_field_value(record, field)
+      return nil unless airview_field_available?(record, field)
+
       value = record.public_send(field.name)
       return value if field.collection_association?
       return Airview.record_label(value, field.label_method) if field.association? && value
@@ -13,6 +15,7 @@ module Airview
 
     def airview_cell_value(record, field)
       value = airview_field_value(record, field)
+      return tag.span("", class: "airview-empty-value") unless airview_field_available?(record, field)
 
       case field.type
       when :boolean
@@ -37,6 +40,7 @@ module Airview
     def airview_input_for(record, field)
       value = airview_field_value(record, field)
       name = "record[#{field.name}]"
+      return text_field_tag(name, nil, disabled: true) unless airview_field_available?(record, field)
 
       case field.type
       when :boolean
@@ -189,6 +193,8 @@ module Airview
     end
 
     def airview_reference_pill(record, field)
+      return tag.span("", class: "airview-empty-value") unless airview_field_available?(record, field)
+
       related = record.public_send(field.name)
       return tag.span("+ Link record", class: "airview-reference-empty") unless related
 
@@ -204,6 +210,8 @@ module Airview
     end
 
     def airview_collection_pills(record, field)
+      return tag.span("0 records", class: "airview-reference-empty") unless airview_field_available?(record, field)
+
       records = record.public_send(field.name).limit(3).to_a
       count = airview_collection_count(record, field)
 
@@ -225,6 +233,8 @@ module Airview
     end
 
     def airview_attachment_cell(record, field)
+      return tag.span("No file", class: "airview-reference-empty") unless airview_field_available?(record, field)
+
       attachment = record.public_send(field.name)
       return tag.span("No file", class: "airview-reference-empty") unless attachment.attached?
 
@@ -241,6 +251,8 @@ module Airview
     end
 
     def airview_reference_input(record, field, name)
+      return text_field_tag(name, nil, disabled: true) unless airview_field_available?(record, field)
+
       related = record.public_send(field.name)
 
       safe_join(
@@ -427,9 +439,31 @@ module Airview
       return "##{record.id}" unless linked_resource
 
       linked_resource.fields.values.reject(&:association?).first(3).filter_map do |field|
+        next unless airview_field_available?(record, field)
+
         value = airview_field_value(record, field)
         "#{field.label}: #{value}" if value.present?
       end.join(" · ")
+    end
+
+    def airview_field_available?(record, field)
+      model_class = record.class
+
+      case field.type
+      when :belongs_to
+        association = model_class.reflect_on_association(field.name) if model_class.respond_to?(:reflect_on_association)
+        association&.macro == :belongs_to && model_class.column_names.include?(association.foreign_key.to_s)
+      when :has_many
+        association = model_class.reflect_on_association(field.name) if model_class.respond_to?(:reflect_on_association)
+        association&.macro == :has_many
+      when :attachment
+        model_class.respond_to?(:attachment_reflections) &&
+          model_class.attachment_reflections.key?(field.name.to_s)
+      else
+        model_class.respond_to?(:column_names) && model_class.column_names.include?(field.name.to_s)
+      end
+    rescue ActiveRecord::StatementInvalid, NameError
+      false
     end
 
     def airview_resource_for_model(model)

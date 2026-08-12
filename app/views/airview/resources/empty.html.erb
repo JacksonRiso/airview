@@ -1,5 +1,11 @@
 <main class="airview-empty">
-  <h1>Airview</h1>
-  <p>No resources are enabled yet.</p>
+  <h1><%= @resource&.label || "Airview" %></h1>
+  <p>
+    <% if @resource %>
+      No available fields are backed by the current schema.
+    <% else %>
+      No resources are enabled yet.
+    <% end %>
+  </p>
   <%= link_to "Configure resources", setup_path %>
 </main>

@@ -11,6 +11,7 @@ module Airview
       @label = key.to_s.humanize
       @label_method = :to_s
       @fields = {}
+      @stale_fields = []
     end
 
     def field(name, type:, label: nil, **options)
@@ -36,6 +37,14 @@ module Airview
 
     def default_fields
       fields.values.select(&:default_visible?)
+    end
+
+    def stale_fields
+      @stale_fields.dup
+    end
+
+    def add_stale_field(field, reason:)
+      @stale_fields << { name: field.name.to_sym, label: field.label, reason: }
     end
 
     def validate!

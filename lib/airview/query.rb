@@ -43,7 +43,9 @@ module Airview
       term = params[:q].to_s.strip
       return scope if term.empty?
 
-      searchable = resource.fields.values.select { |field| %i[string text select].include?(field.type) }
+      searchable = resource.fields.values.select do |field|
+        %i[string text select].include?(field.type) && queryable_field?(scope, field)
+      end
       return scope if searchable.empty?
 
       clauses = searchable.map do |field|
@@ -63,6 +65,7 @@ module Airview
 
         field = resource.fields[name.to_sym]
         next unless field
+        next unless queryable_field?(scope, field)
 
         scope = apply_filter(scope, field, value)
       end
@@ -82,6 +85,7 @@ module Airview
         field = resource.fields[condition["field"].to_s.to_sym]
         next unless field
         next unless field.filterable?
+        next unless queryable_field?(scope, field)
 
         scope = apply_structured_filter(scope, field, condition["operator"], condition["value"])
       end
@@ -183,8 +187,17 @@ module Airview
       field = resource.fields[sort.to_sym]
       return scope unless field
       return scope unless field.sortable?
+      return scope unless queryable_field?(scope, field)
 
       scope.order(field.attribute_name => direction)
+    end
+
+    def queryable_field?(scope, field)
+      return false if field.display_only?
+
+      scope.klass.column_names.include?(field.attribute_name.to_s)
+    rescue NameError
+      false
     end
 
     def sanitize_like(value)

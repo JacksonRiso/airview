@@ -15,6 +15,8 @@ module Airview
 
     def show
       @resources = Airview.resources.values
+      return render(:empty) if @resource.fields.empty?
+
       @views = View.for_resource(@resource.key).ordered
       @active_view = @views.find { |view| view.id.to_s == params[:view_id].to_s }
       @sorted_fields = @resource.fields.values.sort_by { |field| field.label.downcase }
