@@ -194,11 +194,11 @@
   function operatorOptionsForFieldType(fieldType) {
     if (fieldType === "boolean") return [["is checked", "is_true"], ["is unchecked", "is_false"]];
     if (["integer", "float", "decimal"].includes(fieldType)) {
-      return [["=", "equals"], [">", "gt"], ["<", "lt"], [">=", "gte"], ["<=", "lte"], ["is empty", "is_empty"]];
+      return [["=", "equals"], [">", "gt"], ["<", "lt"], [">=", "gte"], ["<=", "lte"], ["is empty", "is_empty"], ["is not empty", "is_not_empty"]];
     }
-    if (["date", "datetime"].includes(fieldType)) return [["is", "equals"], ["before", "before"], ["after", "after"], ["is empty", "is_empty"]];
+    if (["date", "datetime"].includes(fieldType)) return [["is", "equals"], ["before", "before"], ["after", "after"], ["is empty", "is_empty"], ["is not empty", "is_not_empty"]];
 
-    return [["contains", "contains"], ["equals", "equals"], ["starts with", "starts_with"], ["is empty", "is_empty"]];
+    return [["contains", "contains"], ["equals", "equals"], ["starts with", "starts_with"], ["is empty", "is_empty"], ["is not empty", "is_not_empty"]];
   }
 
   function updateFilterOperator(row, fieldType) {

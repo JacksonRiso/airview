@@ -166,10 +166,12 @@ class AirviewResourceBuilderTest < Minitest::Test
       added_count = Airview::ResourceSynchronizer.new(definition).sync_missing_fields
       created_names = fields.created.map { |attributes| attributes.fetch(:name) }
       created_positions = fields.created.map { |attributes| attributes.fetch(:position) }
+      new_column = fields.created.find { |attributes| attributes.fetch(:name) == "new_column" }
 
       assert_equal 2, added_count
       assert_equal %w[id new_column], created_names
       assert_equal [1, 2], created_positions
+      assert_equal false, new_column.fetch(:read_only)
     ensure
       CompanyLocation.test_columns = nil
     end

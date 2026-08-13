@@ -193,8 +193,8 @@ module Airview
 
     def filter_conditions
       request_filters = params[:filters]
-      return [] if params.key?(:filters_present)
       return normalized_filters(request_filters) if request_filters.present?
+      return [] if params.key?(:filters_present)
       return normalized_filters(@active_view.filters) if @active_view&.filters.present?
 
       []

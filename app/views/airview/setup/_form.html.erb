@@ -49,7 +49,14 @@
         <%= form.fields_for :field_definitions do |field_form| %>
           <% stale = field_form.object.stale? %>
           <tr>
-            <td><%= field_form.check_box :visible, disabled: stale %></td>
+            <td>
+              <% if stale %>
+                <%= field_form.hidden_field :visible, value: "0" %>
+                <%= check_box_tag nil, "1", false, disabled: true %>
+              <% else %>
+                <%= field_form.check_box :visible %>
+              <% end %>
+            </td>
             <td><%= field_form.check_box :read_only %></td>
             <td>
               <%= field_form.hidden_field :id if field_form.object.persisted? %>

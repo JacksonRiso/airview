@@ -165,7 +165,7 @@ module Airview
     end
 
     def inferred_readonly?(column, association)
-      readonly?(column) || unsupported_association?(association)
+      readonly?(column) || !!unsupported_association?(association)
     end
 
     def readonly?(column)

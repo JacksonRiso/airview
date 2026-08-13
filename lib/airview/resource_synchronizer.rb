@@ -17,7 +17,9 @@ module Airview
         next if existing_names.include?(attributes[:name].to_s)
 
         position += 1
-        definition.field_definitions.create!(attributes.merge(position:))
+        definition.field_definitions.create!(
+          attributes.merge(position:, read_only: attributes[:read_only] ? true : false)
+        )
         added_count += 1
       end
 
