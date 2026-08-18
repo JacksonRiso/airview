@@ -135,9 +135,23 @@ module Airview
                 when :boolean
                   [["is checked", "is_true"], ["is unchecked", "is_false"]]
                 when :integer, :float, :decimal
-                  [["=", "equals"], [">", "gt"], ["<", "lt"], [">=", "gte"], ["<=", "lte"], ["is empty", "is_empty"], ["is not empty", "is_not_empty"]]
+                  [
+                    ["=", "equals"],
+                    [">", "gt"],
+                    ["<", "lt"],
+                    [">=", "gte"],
+                    ["<=", "lte"],
+                    ["is empty", "is_empty"],
+                    ["is not empty", "is_not_empty"]
+                  ]
                 when :date, :datetime
-                  [["is", "equals"], ["before", "before"], ["after", "after"], ["is empty", "is_empty"], ["is not empty", "is_not_empty"]]
+                  [
+                    ["is", "equals"],
+                    ["before", "before"],
+                    ["after", "after"],
+                    ["is empty", "is_empty"],
+                    ["is not empty", "is_not_empty"]
+                  ]
                 else
                   [
                     ["contains", "contains"],
