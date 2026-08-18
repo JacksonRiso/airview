@@ -141,6 +141,7 @@ module Airview
                 else
                   [
                     ["contains", "contains"],
+                    ["does not contain", "does_not_contain"],
                     ["equals", "equals"],
                     ["starts with", "starts_with"],
                     ["is empty", "is_empty"],

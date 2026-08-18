@@ -198,7 +198,7 @@
     }
     if (["date", "datetime"].includes(fieldType)) return [["is", "equals"], ["before", "before"], ["after", "after"], ["is empty", "is_empty"], ["is not empty", "is_not_empty"]];
 
-    return [["contains", "contains"], ["equals", "equals"], ["starts with", "starts_with"], ["is empty", "is_empty"], ["is not empty", "is_not_empty"]];
+    return [["contains", "contains"], ["does not contain", "does_not_contain"], ["equals", "equals"], ["starts with", "starts_with"], ["is empty", "is_empty"], ["is not empty", "is_not_empty"]];
   }
 
   function updateFilterOperator(row, fieldType) {
@@ -317,9 +317,7 @@
     }
 
     if (event.target.matches("[data-airview-remove-filter]")) {
-      var filterForm = event.target.closest("form");
       event.target.closest("[data-airview-filter-condition]").remove();
-      if (filterForm) filterForm.requestSubmit();
     }
 
     var filterFieldOption = event.target.closest && event.target.closest("[data-airview-filter-field-option]");

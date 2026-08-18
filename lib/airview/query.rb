@@ -139,6 +139,8 @@ module Airview
       case operator
       when "equals"
         scope.where(field.attribute_name => value)
+      when "does_not_contain"
+        scope.where.not(column.matches("%#{sanitize_like(value)}%"))
       when "starts_with"
         scope.where(column.matches("#{sanitize_like(value)}%"))
       else

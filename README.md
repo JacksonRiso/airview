@@ -56,6 +56,29 @@ bundle exec rake
 
 To install this gem onto your local machine, run `bundle exec rake install`.
 
+To publish a new version to RubyGems:
+
+1. Update `Airview::VERSION` in `lib/airview/version.rb`.
+2. Run the test suite:
+
+   ```bash
+   bundle exec rake
+   ```
+
+3. Build the gem:
+
+   ```bash
+   gem build airview.gemspec
+   ```
+
+4. Push the generated `.gem` file:
+
+   ```bash
+   gem push airview-VERSION.gem
+   ```
+
+Replace `VERSION` with the version number you are publishing.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/jacksonriso/airview. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the code of conduct.
